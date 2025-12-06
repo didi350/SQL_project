@@ -1,4 +1,20 @@
--- Question 1: Case When
+-- Question 1: Getting familiar with the database
+
+/* Before we begin querying data, we first need to explore which tables are available by checking the metadata.
+This can be done by using information_schema.tables. */
+
+SELECT table_schema, table_name, table_type AS type
+  FROM information_schema.tables
+ WHERE table_schema = 'public' -- information_schema, pg_catalog
+   AND table_type IN ('BASE TABLE', 'VIEW'); -- This line might not be necessary, because it seems that 'public' contains only base tables anyway.
+
+-- We can also check the columns each table contains by using the query below.
+SELECT table_name, column_name, data_type
+  FROM information_schema.columns
+ WHERE table_name = 'customer';
+-------------------------------------------------------------------------------------------------------------
+
+-- Question 2: Case When
 
 /* Write a query that gives an overview of how many films have replacement costs in the following cost ranges:
 i)   low: 9.99 - 19.99 (the answer is 514)
@@ -14,7 +30,7 @@ SELECT COUNT(*) AS number_films,
  ORDER BY number_films DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 2: Join and Concatenate
+-- Question 3: Join and Concatenate
 
 /* Create an overview of the actors' first and last names and in how many movies they appear in. 
 Which actor is part of most movies?
@@ -62,7 +78,7 @@ SELECT a.actor_id,
  ORDER BY number_movies DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 3: Multiple Joins with the USING clause
+-- Question 4: Multiple Joins with the USING clause
 
 /* Create an overview of the revenue grouped by a column in the format "country, city". 
 Which "country, city" has the least sales?
@@ -93,7 +109,7 @@ Since we're interested in the revenue, we care more about including all the paym
 all the customers, hence the Inner (or Right) join. */
 -------------------------------------------------------------------------------------------------------------
 
--- Question 4: Uncorrelated Subquery in the FROM clause
+-- Question 5: Uncorrelated Subquery in the FROM clause
 
 /* Create a query that shows average daily revenue by the day of the week. 
 What is the average daily revenue of all Sundays?
@@ -109,7 +125,7 @@ SELECT EXTRACT(ISODoW FROM date) AS day_of_week,
  ORDER BY 1 DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 5: Window Functions, CTE and running total
+-- Question 6: Window Functions, CTE and running total
 
 /* The management team is interested in the monthly sales performance (i.e. revenue), and wants to identify trends to 
 support strategic decision-making. This can be done by aggregating the sales data and calculating a running total of 
