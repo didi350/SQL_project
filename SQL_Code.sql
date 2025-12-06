@@ -5,19 +5,16 @@ i)   low: 9.99 - 19.99 (the answer is 514)
 ii)  medium: 20.00 - 24.99 (the answer is 250)
 iii) high: 25.00 - 29.99 (the answer is 236) */
 
-SELECT 
-COUNT(*),
-CASE 
-     WHEN replacement_cost <= 19.99 THEN 'low'
-     WHEN replacement_cost <= 24.99 THEN 'medium'
-     ELSE 'high'
-     END as cost_category
-FROM film
-GROUP BY cost_category
-ORDER BY Count(*) DESC
+SELECT COUNT(*) AS number_films,
+	   CASE WHEN replacement_cost <= 19.99 THEN 'low'
+     		WHEN replacement_cost <= 24.99 THEN 'medium'
+    		ELSE 'high' END AS cost_category
+  FROM film
+ GROUP BY cost_category
+ ORDER BY number_films DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 2: Join & Concatenate
+-- Question 2: Join and Concatenate
 
 /* Create an overview of the actors' first and last names and in how many movies they appear in. 
 Which actor is part of most movies?
@@ -26,25 +23,23 @@ actors just by name, or by name and ID as well. The code for capitalizing names 
 https://www.geeksforgeeks.org/sql/how-to-capitalize-first-letter-in-sql. */
 
 -- Solution 1: Grouping just by name
-SELECT 
-     first_name || ' ' || last_name as name,
-     COUNT(film_id) as number_movies
-FROM actor a
-INNER JOIN film_actor fa
-     ON a.actor_id = fa.actor_id
-GROUP BY name
-ORDER BY number_movies DESC
+SELECT first_name || ' ' || last_name AS name,
+       COUNT(film_id) AS number_films
+  FROM actor AS a
+ INNER JOIN film_actor AS fa
+	ON a.actor_id = fa.actor_id
+ GROUP BY name
+ ORDER BY number_films DESC;
 
 -- Solution 2: Grouping by both name and ID
-SELECT
-     a.actor_id, 
-     first_name || ' ' || last_name as name,
-     COUNT(film_id) as number_movies
-FROM actor a
-INNER JOIN film_actor fa
-     ON a.actor_id = fa.actor_id
-GROUP BY name, a.actor_id
-ORDER BY number_movies DESC
+SELECT a.actor_id, 
+       first_name || ' ' || last_name AS name,
+       COUNT(film_id) AS number_films
+  FROM actor AS a
+ INNER JOIN film_actor AS fa
+    ON a.actor_id = fa.actor_id
+ GROUP BY name, a.actor_id
+ ORDER BY number_films DESC;
 -------------------------------------------------------------------------------------------------------------
 
 -- Bonus: Finding Susan
@@ -56,39 +51,33 @@ the data is grouped in 2 different ways, as demonstrated previously.
 When querying the 2 different solutions, you might notice that Susan shows up at the top of the list when treated as 
 the same person, but not when treated separately. */
 
-SELECT
-     a.actor_id, 
-     first_name || ' ' || last_name as name,
-     COUNT(film_id) as number_movies
-FROM actor a
-INNER JOIN film_actor fa
-     ON a.actor_id = fa.actor_id
-WHERE first_name || ' ' || last_name ILIKE 'Susan Davis'
-GROUP BY a.actor_id, name
-ORDER BY number_movies DESC
+SELECT a.actor_id, 
+       first_name || ' ' || last_name AS name,
+       COUNT(film_id) AS number_movies
+  FROM actor AS a
+ INNER JOIN film_actor AS fa
+    ON a.actor_id = fa.actor_id
+ WHERE first_name || ' ' || last_name ILIKE 'Susan Davis'
+ GROUP BY a.actor_id, name
+ ORDER BY number_movies DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 3: Multiple Joins
+-- Question 3: Multiple Joins with the USING clause
 
 /* Create an overview of the revenue grouped by a column in the format "country, city". 
 Which "country, city" has the least sales?
 -> The answer is United States, Tallahassee. */
 
-SELECT
-     country || ', ' || city as country_city,
-     SUM(amount) as revenue
-FROM customer c
-LEFT JOIN address a
-     On a.address_id = c.address_id
-LEFT JOIN city ci
-     On ci.city_id = a.city_id
-LEFT JOIN country co
-     On co.country_id = ci.country_id
-INNER JOIN payment p
-     On p.customer_id = c.customer_id
-GROUP BY country_city
-ORDER BY revenue ASC
-LIMIT 5
+SELECT country || ', ' || city AS country_city,
+       SUM(amount) AS revenue
+  FROM customer AS c
+  LEFT JOIN address AS a USING(address_id)
+  LEFT JOIN city AS ci USING(city_id)
+  LEFT JOIN country AS co USING(country_id)
+ INNER JOIN payment AS p USING(customer_id)
+ GROUP BY country_city
+ ORDER BY revenue
+ LIMIT 5;
 -------------------------------------------------------------------------------------------------------------
 
 -- Bonus: Why use Left and Inner Joins?
@@ -104,30 +93,23 @@ Since we're interested in the revenue, we care more about including all the paym
 all the customers, hence the Inner (or Right) join. */
 -------------------------------------------------------------------------------------------------------------
 
--- Question 4: Uncorrelated Subquery in the From clause
+-- Question 4: Uncorrelated Subquery in the FROM clause
 
 /* Create a query that shows average daily revenue by the day of the week. 
 What is the average daily revenue of all Sundays?
 -> The answer is $1,410.65. */
 
-SELECT
-     EXTRACT(ISODoW from date) as day_of_week,
-     ROUND(AVG(total_per_day),2) as avg_daily_revenue
-FROM
-     (SELECT
-          DATE(payment_date),
-          SUM(amount) as total_per_day
-     FROM payment
-     GROUP BY DATE(payment_date))
-GROUP BY day_of_week
-ORDER BY 1 DESC
-
--- Notes
-/* We need to use "Date(payment_date)" because the "payment_date" includes timezones and groups by timezones.
-"total_per_day" is the sum for the "Date(payment_date)", aka not yet by weekday. */
+SELECT EXTRACT(ISODoW FROM date) AS day_of_week,
+       ROUND(AVG(total_per_day), 2) AS avg_daily_revenue
+  FROM (SELECT DATE(payment_date), -- the DATE function is used to exclude timezones and avoid grouping by timezones
+			   SUM(amount) AS total_per_day -- this sums by "DATE(payment_date)", but not yet by weekday
+     	  FROM payment
+     	 GROUP BY DATE(payment_date)) AS revenue_per_date
+ GROUP BY day_of_week
+ ORDER BY 1 DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 5: CTE, Window Functions and running total
+-- Question 5: Window Functions, CTE and running total
 
 /* The management team is interested in the monthly sales performance (i.e. revenue), and wants to identify trends to 
 support strategic decision-making. This can be done by aggregating the sales data and calculating a running total of 
