@@ -104,7 +104,7 @@ Since we're interested in the revenue, we care more about including all the paym
 all the customers, hence the Inner (or Right) join. */
 -------------------------------------------------------------------------------------------------------------
 
--- Question 4: Uncorrelated Subquery & Extract
+-- Question 4: Uncorrelated Subquery in the From clause
 
 /* Create a query that shows average daily revenue by the day of the week. 
 What is the average daily revenue of all Sundays?
@@ -125,4 +125,35 @@ ORDER BY 1 DESC
 -- Notes
 /* We need to use "Date(payment_date)" because the "payment_date" includes timezones and groups by timezones.
 "total_per_day" is the sum for the "Date(payment_date)", aka not yet by weekday. */
+-------------------------------------------------------------------------------------------------------------
+
+-- Question 5: CTE, Window Functions and running total
+
+/* The management team is interested in the monthly sales performance (i.e. revenue), and wants to identify trends to 
+support strategic decision-making. This can be done by aggregating the sales data and calculating a running total of 
+the sales revenue by month. This will provide the management team with a clear depiction of sales trends and help identify
+periods of high or low sales activity. We can additionally include the ship_country or some other field to get more details.
+
+The DATE_TRUNC function is used to truncate the order_date to the nearest month. EXTRACT(MONTH FROM order_date) works 
+too, but doesn't fit in this case because we need both the year and the month.
+It would make sense to include percentage growth by using the LAG() or LEAD() window functions, but for the purposes 
+of this demonstration, we'll keep just the running total. The former might require creating more complex code. */
+
+WITH monthly_revenue AS (
+     SELECT -- ship_country,
+            DATE_TRUNC('MONTH', order_date)::date AS month_year, -- the ::date cast is used to remove the timestamps
+            ROUND(SUM(unit_price::numeric * quantity), 2) AS revenue_sales -- the ::numeric cast makes the ROUND formula work
+       FROM orders AS o
+      INNER JOIN order_details AS od
+      USING(order_id) -- instead of the ON clause, given the column has the same name in both tables
+      GROUP BY month_year -- , ship_country
+)
+
+SELECT month_year, revenue_sales, -- ship_country,
+       SUM(revenue_sales) OVER (-- PARTITION BY ship_country -- if more details are needed
+	   					  ORDER BY month_year
+           				  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+						 ) AS revenue_running_total
+  FROM monthly_revenue
+ ORDER BY month_year;
 -------------------------------------------------------------------------------------------------------------
