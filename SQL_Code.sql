@@ -14,7 +14,7 @@ SELECT table_name, column_name, data_type
  WHERE table_name = 'customer';
 -------------------------------------------------------------------------------------------------------------
 
--- Question 2: Case When
+-- Question 2: Categorizing with CASE WHEN statement
 
 /* Write a query that gives an overview of how many films have replacement costs in the following cost ranges:
 i)   low: 9.99 - 19.99 (the answer is 514)
@@ -30,7 +30,7 @@ SELECT COUNT(*) AS number_films,
  ORDER BY number_films DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 3: Join and Concatenate
+-- Question 3: JOIN and GROUP BY with different versions
 
 /* Create an overview of the actors' first and last names and in how many movies they appear in. 
 Which actor is part of most movies?
@@ -78,7 +78,7 @@ SELECT a.actor_id,
  ORDER BY number_movies DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 4: Multiple Joins with the USING clause
+-- Question 4: Multiple JOINS with the USING clause
 
 /* Create an overview of the revenue grouped by a column in the format "country, city". 
 Which "country, city" has the least sales?
@@ -94,6 +94,13 @@ SELECT country || ', ' || city AS country_city,
  GROUP BY country_city
  ORDER BY revenue
  LIMIT 5;
+
+/* The USING clause improves the code readability when the column shared between the tables has the same name in both.
+Furthermore, it ensures that this common column will return only once, aka there won't be duplicates in the resulting 
+joined table. This is especially important for views, since they don't allow columns with the same exact name even if 
+they come from different tables.
+An alternative to USING is simply renaming the columns, like the unit_price from the products vs order_details tables. 
+But this should probably be avoided when the columns serve as primary and foreign keys in the respective tables. */
 -------------------------------------------------------------------------------------------------------------
 
 -- Bonus: Why use Left and Inner Joins?
@@ -125,7 +132,7 @@ SELECT EXTRACT(ISODoW FROM date) AS day_of_week,
  ORDER BY 1 DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 6: Window Functions, CTE and running total
+-- Question 6: Window Functions, CTEs and running total
 
 /* The management team is interested in the monthly sales performance (i.e. revenue), and wants to identify trends to 
 support strategic decision-making. This can be done by aggregating the sales data and calculating a running total of 
