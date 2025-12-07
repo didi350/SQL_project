@@ -157,7 +157,7 @@ of this demonstration, we'll keep just the running total. The former might requi
 WITH monthly_revenue AS (
      SELECT -- ship_country,
             DATE_TRUNC('MONTH', order_date)::date AS month_year, -- the ::date cast is used to remove the timestamps
-            ROUND(SUM(unit_price::numeric * quantity), 2) AS revenue_sales -- the ::numeric cast makes the ROUND formula work
+            ROUND(SUM(unit_price_orders::numeric * quantity), 2) AS revenue_sales -- the ::numeric cast is needed for ROUND to work
        FROM orders AS o
       INNER JOIN order_details AS od
       USING(order_id) -- instead of the ON clause, given the column has the same name in both tables
