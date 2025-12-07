@@ -12,7 +12,7 @@ SELECT table_schema, table_name, table_type AS type
 SELECT table_name, column_name, data_type
   FROM information_schema.columns
  WHERE table_name = 'customer'; -- update the table name here
--------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 -- Question 2: Categorizing with the CASE WHEN statement
 
@@ -52,7 +52,7 @@ SELECT CASE WHEN p.discontinued = 1
   JOIN categories AS c USING(category_id)
  GROUP BY discontinued_yn, c.category_name --, p.product_name
  ORDER BY discontinued_yn, value_excess_inventory DESC
--------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 -- Question 3: Multiple JOINS with the USING clause
 
@@ -77,7 +77,7 @@ joined table. This is especially important for views, since they don't allow col
 they come from different tables.
 An alternative to USING is simply renaming the columns, like the unit_price from the products vs order_details tables. 
 But this should probably be avoided when the columns serve as primary and foreign keys in the respective tables. */
--------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 -- Bonus: Why use Left and Inner Joins?
 
@@ -90,7 +90,7 @@ The company could categorize as a customer someone who uses the service/product 
 multiple users of a Netflix account. Or it could have customers who are invoiced, but haven't paid yet.
 Since we're interested in the revenue, we care more about including all the payments and not necessarily including 
 all the customers, hence the Inner (or Right) join. */
--------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 -- Question 4: GROUP BY versions with different results
 
@@ -124,7 +124,7 @@ SELECT a.actor_id,
  WHERE CONCAT(first_name, ' ', last_name) ILIKE 'Susan Davis'
  GROUP BY a.actor_id, name
  ORDER BY number_movies DESC;
--------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 -- Question 5: Uncorrelated Subquery in the FROM clause
 
@@ -140,7 +140,7 @@ SELECT EXTRACT(ISODoW FROM date) AS day_of_week,
      	 GROUP BY DATE(payment_date)) AS revenue_per_date
  GROUP BY day_of_week
  ORDER BY day_of_week;
--------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 -- Question 6: CTE, Window Function and running total
 
@@ -171,4 +171,4 @@ SELECT month_year, revenue_sales, -- ship_country,
 						 ) AS revenue_running_total
   FROM monthly_revenue
  ORDER BY month_year;
--------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
