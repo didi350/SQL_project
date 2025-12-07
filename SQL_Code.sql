@@ -27,7 +27,7 @@ We can further include the unique products in the grouping to get more detail an
 
 /* Renaming columns:
 Given the products table and the order_details table both have columns named unit_price with different values and context,
-we should keep both columns and rename them (instead of droppping one or merging them). Renaming needs to come before creating 
+we should keep both and rename them (instead of droppping one of them or merging them). Renaming needs to come before creating 
 potential views that join these tables; this will avoid merging the columns through the USING clause as mistaken duplicates.
 We only need to rename them once. After that, we should leave the ALTER/RENAME code in comments. Running it for a second time 
 wouldn't work anyway, given it can't find the columns by their old names anymore. */
