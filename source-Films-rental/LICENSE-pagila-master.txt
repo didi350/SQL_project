@@ -1,6 +1,7 @@
 # Licence
 
 *Database and schema are retrieved from: https://github.com/devrimgunduz/pagila/tree/master
+"Pagila started as a port of the Sakila example database available for MySQL, which was originally developed by Mike Hillyer of the MySQL AB documentation team."
 
 Copyright (c) Devrim Gündüz <devrim@gunduz.org>
 
