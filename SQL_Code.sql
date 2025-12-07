@@ -6,7 +6,7 @@ This can be done by using information_schema.tables. */
 SELECT table_schema, table_name, table_type AS type
   FROM information_schema.tables
  WHERE table_schema = 'public' -- information_schema, pg_catalog
-   AND table_type IN ('BASE TABLE', 'VIEW'); -- This line might not be necessary, because it seems that 'public' contains only base tables anyway.
+   AND table_type IN ('BASE TABLE', 'VIEW'); -- This line might not be necessary, because it seems 'public' contains only base tables anyway.
 
 -- We can also check the columns each table contains by using the query below.
 SELECT table_name, column_name, data_type
@@ -14,23 +14,47 @@ SELECT table_name, column_name, data_type
  WHERE table_name = 'customer';
 -------------------------------------------------------------------------------------------------------------
 
--- Question 2: Categorizing with CASE WHEN statement
+-- Question 2: Categorizing with the CASE WHEN statement
 
-/* Write a query that gives an overview of how many films have replacement costs in the following cost ranges:
-i)   low: 9.99 - 19.99 (the answer is 514)
-ii)  medium: 20.00 - 24.99 (the answer is 250)
-iii) high: 25.00 - 29.99 (the answer is 236) */
+/* The purpose for this exercise is to separate the discontinued products from the rest and calculate their remaining 
+quantity and their value. These products are considered excess inventory (also known as dead or obsolete inventory), 
+and won't be sold anymore.
+-> The total value of discontinued products still in stock is $5,477.6, and the remaining quantity is 157 units in stock
+(with different quantities per unit, as provided in the text column with the same name (quantity_per_unit)).
+By looking at the output, you'll notice that the categories (used for the grouping) with discontinued products are not
+fully discontinued. The same categories still have other products that are still being sold, and whose value is much higher.
+We can further include the unique products in the grouping to get more detail and better visibility. */
 
-SELECT COUNT(*) AS number_films,
-	   CASE WHEN replacement_cost <= 19.99 THEN 'low'
-     		WHEN replacement_cost <= 24.99 THEN 'medium'
-    		ELSE 'high' END AS cost_category
-  FROM film
- GROUP BY cost_category
- ORDER BY number_films DESC;
+/* Renaming columns:
+Given the products table and the order_details table both have columns named unit_price with different values and context,
+we should keep both and rename them (instead of droppping one of them or merging them). Renaming needs to come before creating 
+potential views that join these tables; this will avoid merging the columns through the USING clause as mistaken duplicates.
+We only need to rename them once. After that, we should leave the ALTER/RENAME code in comments. Running it for a second time 
+wouldn't work anyway, given it can't find the columns by their old names anymore. */
+
+-- Use this code once
+-- ALTER TABLE products
+-- RENAME COLUMN unit_price TO unit_price_products;
+
+-- Use this code once
+-- ALTER TABLE order_details
+-- RENAME COLUMN unit_price TO unit_price_orders;
+
+SELECT CASE WHEN p.discontinued = 1 
+			THEN 'discontinued'
+			END as discontinued_yn,
+	   c.category_name AS category_product, -- p.product_name,
+	   -- p.quantity_per_unit, -- this is just text and can only be used for grouping, but can't be aggregated itself
+	   ROUND(SUM(p.unit_price_products::numeric * p.units_in_stock), 2) AS value_excess_inventory,
+	   SUM(p.units_in_stock) AS units_in_stock_total,
+	   COUNT(DISTINCT p.product_name) AS unique_products_per_category
+  FROM products AS p
+  JOIN categories AS c USING(category_id)
+ GROUP BY discontinued_yn, c.category_name --, p.product_name
+ ORDER BY discontinued_yn, value_excess_inventory DESC
 -------------------------------------------------------------------------------------------------------------
 
--- Question 3: JOIN and GROUP BY with different versions
+-- Question 3: JOIN and GROUP BY with different results
 
 /* Create an overview of the actors' first and last names and in how many movies they appear in. 
 Which actor is part of most movies?
@@ -39,22 +63,20 @@ actors just by name, or by name and ID as well. The code for capitalizing names 
 https://www.geeksforgeeks.org/sql/how-to-capitalize-first-letter-in-sql. */
 
 -- Solution 1: Grouping just by name
-SELECT first_name || ' ' || last_name AS name,
+SELECT CONCAT(first_name, ' ', last_name) AS full_name,
        COUNT(film_id) AS number_films
   FROM actor AS a
- INNER JOIN film_actor AS fa
-	ON a.actor_id = fa.actor_id
- GROUP BY name
+ INNER JOIN film_actor AS fa USING (actor_id)
+ GROUP BY full_name
  ORDER BY number_films DESC;
 
 -- Solution 2: Grouping by both name and ID
 SELECT a.actor_id, 
-       first_name || ' ' || last_name AS name,
+       CONCAT(first_name, ' ', last_name) AS full_name,
        COUNT(film_id) AS number_films
   FROM actor AS a
- INNER JOIN film_actor AS fa
-    ON a.actor_id = fa.actor_id
- GROUP BY name, a.actor_id
+ INNER JOIN film_actor AS fa USING (actor_id)
+ GROUP BY full_name, a.actor_id
  ORDER BY number_films DESC;
 -------------------------------------------------------------------------------------------------------------
 
@@ -68,12 +90,12 @@ When querying the 2 different solutions, you might notice that Susan shows up at
 the same person, but not when treated separately. */
 
 SELECT a.actor_id, 
-       first_name || ' ' || last_name AS name,
+       CONCAT(first_name, ' ', last_name) AS name,
        COUNT(film_id) AS number_movies
   FROM actor AS a
  INNER JOIN film_actor AS fa
     ON a.actor_id = fa.actor_id
- WHERE first_name || ' ' || last_name ILIKE 'Susan Davis'
+ WHERE CONCAT(first_name, ' ', last_name) ILIKE 'Susan Davis'
  GROUP BY a.actor_id, name
  ORDER BY number_movies DESC;
 -------------------------------------------------------------------------------------------------------------
@@ -84,7 +106,7 @@ SELECT a.actor_id,
 Which "country, city" has the least sales?
 -> The answer is United States, Tallahassee. */
 
-SELECT country || ', ' || city AS country_city,
+SELECT CONCAT(country, ', ', city) AS country_city,
        SUM(amount) AS revenue
   FROM customer AS c
   LEFT JOIN address AS a USING(address_id)
