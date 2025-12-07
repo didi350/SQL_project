@@ -47,7 +47,7 @@ SELECT CASE WHEN p.discontinued = 1
 	   -- p.quantity_per_unit, -- this is just text and can only be used for grouping, but can't be aggregated itself
 	   ROUND(SUM(p.unit_price_products::numeric * p.units_in_stock), 2) AS value_excess_inventory,
 	   SUM(p.units_in_stock) AS units_in_stock_total,
-	   COUNT(DISTINCT p.product_name) AS unique_products_per_category
+	   COUNT(DISTINCT p.product_name) AS products_unique_per_category
   FROM products AS p
   JOIN categories AS c USING(category_id)
  GROUP BY discontinued_yn, c.category_name --, p.product_name
