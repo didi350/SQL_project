@@ -1,6 +1,6 @@
 # Licence
 
-[https://github.com/devrimgunduz/pagila/tree/master](https://github.com/devrimgunduz/pagila/tree/master)
+https://github.com/devrimgunduz/pagila/tree/master
 
 Copyright (c) Devrim Gündüz <devrim@gunduz.org>
 
