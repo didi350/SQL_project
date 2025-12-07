@@ -1,6 +1,6 @@
 *Database and schema are retrieved from: https://github.com/pthom/northwind_psql/tree/master
 
-(The northwind database originates from Microsoft : http://northwinddatabase.codeplex.com/license)
+(The northwind database originates from microsoft : http://northwinddatabase.codeplex.com/license)
 
 # Microsoft Public License (Ms-PL)
 Microsoft Public License (Ms-PL)
@@ -50,5 +50,6 @@ or conditions. You may have additional consumer rights under your local laws whi
 permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a 
 
 particular purpose and non-infringement.
+
 
 
