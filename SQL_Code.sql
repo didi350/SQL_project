@@ -54,53 +54,7 @@ SELECT CASE WHEN p.discontinued = 1
  ORDER BY discontinued_yn, value_excess_inventory DESC
 -------------------------------------------------------------------------------------------------------------
 
--- Question 3: JOIN and GROUP BY with different results
-
-/* Create an overview of the actors' first and last names and in how many movies they appear in. 
-Which actor is part of most movies?
--> The actor that shows up on top of the list changes, Susan Davis or Gina Degeneres, depending whether we group 
-actors just by name, or by name and ID as well. The code for capitalizing names was taken from the following source:
-https://www.geeksforgeeks.org/sql/how-to-capitalize-first-letter-in-sql. */
-
--- Solution 1: Grouping just by name
-SELECT CONCAT(first_name, ' ', last_name) AS full_name,
-       COUNT(film_id) AS number_films
-  FROM actor AS a
- INNER JOIN film_actor AS fa USING (actor_id)
- GROUP BY full_name
- ORDER BY number_films DESC;
-
--- Solution 2: Grouping by both name and ID
-SELECT a.actor_id, 
-       CONCAT(first_name, ' ', last_name) AS full_name,
-       COUNT(film_id) AS number_films
-  FROM actor AS a
- INNER JOIN film_actor AS fa USING (actor_id)
- GROUP BY full_name, a.actor_id
- ORDER BY number_films DESC;
--------------------------------------------------------------------------------------------------------------
-
--- Bonus: Finding Susan
-
-/* E.g. Susan Davis shows up twice, with IDs 101 and 110. One of the IDs could be a mistake, especially given it has 
-the same digits reordered, which might imply mistyping. But it could also be an entirely different person. 
-The best way to confirm would be to reach out to the source/collector of the data. In the absence of that possibility, 
-the data is grouped in 2 different ways, as demonstrated previously. 
-When querying the 2 different solutions, you might notice that Susan shows up at the top of the list when treated as 
-the same person, but not when treated separately. */
-
-SELECT a.actor_id, 
-       CONCAT(first_name, ' ', last_name) AS name,
-       COUNT(film_id) AS number_movies
-  FROM actor AS a
- INNER JOIN film_actor AS fa
-    ON a.actor_id = fa.actor_id
- WHERE CONCAT(first_name, ' ', last_name) ILIKE 'Susan Davis'
- GROUP BY a.actor_id, name
- ORDER BY number_movies DESC;
--------------------------------------------------------------------------------------------------------------
-
--- Question 4: Multiple JOINS with the USING clause
+-- Question 3: Multiple JOINS with the USING clause
 
 /* Create an overview of the revenue grouped by a column in the format "country, city". 
 Which "country, city" has the least sales?
@@ -138,6 +92,40 @@ Since we're interested in the revenue, we care more about including all the paym
 all the customers, hence the Inner (or Right) join. */
 -------------------------------------------------------------------------------------------------------------
 
+-- Question 4: GROUP BY versions with different results
+
+/* Create an overview of the actors' first and last names and in how many movies they appear in. 
+Which actor is part of most movies?
+-> The actor that shows up on top of the list changes, Susan Davis or Gina Degeneres, depending whether we group actors 
+just by name, or both by their name and their actor ID. We'll investigate why just below this code. */
+
+SELECT CONCAT(first_name, ' ', last_name) AS full_name,
+	   -- a.actor_id, -- the different version
+       COUNT(film_id) AS number_films
+  FROM actor AS a
+ INNER JOIN film_actor AS fa USING (actor_id)
+ GROUP BY full_name --, a.actor_id -- the different version
+ ORDER BY number_films DESC;
+
+/* The reason why (Finding Susan):
+The actor Susan Davis shows up twice, with IDs 101 and 110. One of the IDs could be a mistake, especially given it has 
+the same digits reordered, which might imply mistyping. But it could also be an entirely different person. 
+The best way to confirm would be to reach out to the source/collector of the data. In the absence of that possibility, 
+the data is grouped in 2 different ways, as demonstrated beforehand. 
+When querying with and without grouping by actor ID, Susan shows up at the top of the list when treated as the same person, 
+but not when treated separately. This goes to show how important the small details are. */
+
+SELECT a.actor_id, 
+       CONCAT(first_name, ' ', last_name) AS name,
+       COUNT(film_id) AS number_movies
+  FROM actor AS a
+ INNER JOIN film_actor AS fa
+    ON a.actor_id = fa.actor_id
+ WHERE CONCAT(first_name, ' ', last_name) ILIKE 'Susan Davis'
+ GROUP BY a.actor_id, name
+ ORDER BY number_movies DESC;
+-------------------------------------------------------------------------------------------------------------
+
 -- Question 5: Uncorrelated Subquery in the FROM clause
 
 /* Create a query that shows average daily revenue by the day of the week. 
@@ -154,7 +142,7 @@ SELECT EXTRACT(ISODoW FROM date) AS day_of_week,
  ORDER BY 1 DESC;
 -------------------------------------------------------------------------------------------------------------
 
--- Question 6: Window Functions, CTEs and running total
+-- Question 6: CTE, Window Function and running total
 
 /* The management team is interested in the monthly sales performance (i.e. revenue), and wants to identify trends to 
 support strategic decision-making. This can be done by aggregating the sales data and calculating a running total of 
