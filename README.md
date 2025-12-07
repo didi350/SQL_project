@@ -8,4 +8,4 @@ The results are provided in screenshots to help follow alongside the project cod
 Some of the questions use the Pagila database about a films rental online shop. This database seems to be a version of the Sakila database, which was originally developed by Mike Hillyer of the MySQL AB documentation team. The Pagila database, compatible with PostgreSQL, was provided by Devrim Gündüz via <https://github.com/devrimgunduz/pagila/tree/master>.
 Other questions use data from the famous Northwind database, an international gourmet food distributor. This database originates from Microsoft and is adapted for PostgreSQL by Pascal Thomet via <https://github.com/pthom/northwind_psql/tree/master>.
 
-Thanks for coming on over!
+Thanks for visiting!
