@@ -11,7 +11,7 @@ SELECT table_schema, table_name, table_type AS type
 -- We can also check the columns each table contains by using the query below.
 SELECT table_name, column_name, data_type
   FROM information_schema.columns
- WHERE table_name = 'customer';
+ WHERE table_name = 'customer'; -- update the table name here
 -------------------------------------------------------------------------------------------------------------
 
 -- Question 2: Categorizing with the CASE WHEN statement
@@ -23,11 +23,11 @@ and won't be sold anymore.
 (with different quantities per unit, as provided in the text column with the same name (quantity_per_unit)).
 By looking at the output, you'll notice that the categories (used for the grouping) with discontinued products are not
 fully discontinued. The same categories still have other products that are still being sold, and whose value is much higher.
-We can further include the unique products in the grouping to get more detail and better visibility. */
+We can further group by the unique products per category to get more details and better visibility. */
 
 /* Renaming columns:
-Given the products table and the order_details table both have columns named unit_price with different values and context,
-we should keep both and rename them (instead of droppping one of them or merging them). Renaming needs to come before creating 
+Given the products table and the order_details table both have columns named unit_price with different values and context, we 
+should keep both and rename them (instead of droppping one of them or merging them). Renaming needs to come before creating 
 potential views that join these tables; this will avoid merging the columns through the USING clause as mistaken duplicates.
 We only need to rename them once. After that, we should leave the ALTER/RENAME code in comments. Running it for a second time 
 wouldn't work anyway, given it can't find the columns by their old names anymore. */
