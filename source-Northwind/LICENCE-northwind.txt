@@ -1,3 +1,5 @@
+Database source: https://github.com/pthom/northwind_psql/tree/master
+
 (The northwind database originates from microsoft : http://northwinddatabase.codeplex.com/license)
 
 # Microsoft Public License (Ms-PL)
@@ -46,4 +48,5 @@ code form, you may only do so under a license that complies with this license.
 (E) The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees
 or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent
 permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a 
+
 particular purpose and non-infringement.
