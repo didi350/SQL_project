@@ -6,7 +6,7 @@ This can be done by using information_schema.tables. */
 SELECT table_schema, table_name, table_type AS type
   FROM information_schema.tables
  WHERE table_schema = 'public' -- information_schema, pg_catalog
-   AND table_type IN ('BASE TABLE', 'VIEW'); -- This line might not be necessary, because it seems 'public' contains only base tables anyway.
+   AND table_type IN ('BASE TABLE', 'VIEW');
 
 -- We can also check the columns each table contains by using the query below.
 SELECT table_name, column_name, data_type
