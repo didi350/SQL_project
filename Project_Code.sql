@@ -139,7 +139,7 @@ SELECT EXTRACT(ISODoW FROM date) AS day_of_week,
      	  FROM payment
      	 GROUP BY DATE(payment_date)) AS revenue_per_date
  GROUP BY day_of_week
- ORDER BY 1;
+ ORDER BY day_of_week;
 -------------------------------------------------------------------------------------------------------------
 
 -- Question 6: CTE, Window Function and running total
