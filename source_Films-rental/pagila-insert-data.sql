@@ -48344,4 +48344,3 @@ ALTER TABLE ONLY public.store
 --
 -- PostgreSQL database dump complete
 --
-
