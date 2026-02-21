@@ -1,7 +1,7 @@
 # Welcome!
 
 This project aims to answer several questions using a variety of SQL clauses, ranging from CASE WHEN to Window functions.
-The Project-code file contains the entire code, accompanied by comments that provide more context. This was created using PostgreSQL and pgAdmin4. There are bonus sections, such as "Finding Susan" which showcases some critical thinking skills, as well as reasoning explaining why certain joins are used over others.
+The Code-Project file contains the entire code, accompanied by comments that provide more context. This was created using PostgreSQL and pgAdmin4. There are bonus sections, such as "Finding Susan" which showcases some critical thinking skills, as well as reasoning explaining why certain joins are used over others.
 
 The results are provided in screenshots to help follow alongside the project code. The databases can be loaded directly using the additional code provided in the source folders, where you can also find schema diagrams and licences. These loading codes and schema diagrams are copied directly from their respective sources and were not created by myself.
 
